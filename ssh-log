@@ -1,0 +1,5 @@
+#!/bin/sh
+
+DIR=~/enc/history/$1
+mkdir -p $DIR
+ssh $1 | tee $DIR/$(date +%s).log
