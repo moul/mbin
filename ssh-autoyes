@@ -1,0 +1,20 @@
+#!/bin/sh
+# thx solvik
+
+stty -echo;
+read -p "Input password:" A;
+stty echo;
+echo;
+
+for HOST in `cat /tmp/poney`
+do
+#ssh-keygen -R $HOST
+echo "$HOST"
+expect -c "set timeout -1;\
+spawn ssh -o StrictHostKeyChecking=no $HOST -l root \"hostname;\";\
+match_max 100000;\
+expect *password:*;\
+send -- $A\r;\
+interact;"
+
+done
