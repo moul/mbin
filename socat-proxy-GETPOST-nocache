@@ -1,0 +1,8 @@
+#!/bin/bash
+
+proxy_addr=$1
+proxy_port=$2
+
+{ nc "$proxy_addr" "$proxy_port" && exec 1>&- ; } < <(
+ awk '{ sub(/GET/, "POST"); print; fflush("") }; NR<2{print "Expires: Thu, 01 Dec 2020 16:00:00 GMT"; print "Cache-Control: public"; }'
+)
