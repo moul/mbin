@@ -1,0 +1,49 @@
+#/bin/sh
+
+RED="#[31;01m"
+GREEN="#[32;01m"
+YELLOW="#[33;01m"
+BLUE="#[34;01m"
+PINK="#[35;01m"
+WHITE="#[0m"
+
+output=$(lsof -i -n -P -R -o \
+    | grep -v 127.0.0.1:43217 | grep -v 127.0.0.1:10001 | grep -v 127.0.0.1:43218 | grep -v '\[::1\]:' \
+    | grep -v wdm | grep -v XFree86 | grep -v sshd | grep -v xconsole \
+    | sed "1d;s/^\([^\ ]*[\ ]*[0-9]*[\ ]*[0-9]*[\ ]*[^\ ]*\)\([\ ]*[^\ ]*[\ ]*[^\ ]*[\ ]*[^\ ]*[\ ]*[^\ ]*\)\([\ ]*[^\ ]*\)\([\ ]*[^\ ]*\)\([\ ]*[^\ ]*\)/\1 \3 \4/g;s/\([^\ ]*\)->\([^\ ]*\)/$RED\1   \2$WHITE/g;s/:/ /g" \
+    | sed "s/\(10.42.42.62 1080\)/$GREEN\1$WHITE/g" \
+    | sed "s/\(94.23.69.42 50\)/$GREEN\1$WHITE/g" \
+    | sed "s/\(94.23.69.42 443\)/$GREEN\1$WHITE/g" \
+    | sed "s/\(87.98.178.142 22\)/$GREEN\1$WHITE/g" \
+    | sed "s/\(87.98.142.214 22\)/$GREEN\1$WHITE/g" \
+    | sed "s/\(163.5.69.12 2222\)/$GREEN\1$WHITE/g" \
+    | sed "s/\(10.42.42.62 3128\)/$YELLOW\1$WHITE/g" \
+    | sed "s/\(10.42.1.59 4242\)/$YELLOW\1$WHITE/g" \
+    | sed "s/\(10.42.6.6 53\)/$YELLOW\1$WHITE/g" \
+    | sed "s/\(10.42.7.7 53\)/$YELLOW\1$WHITE/g" \
+    | sed "s/\(^\([^\ ]*\)\)/$RED\1$WHITE/g"
+    )
+ips=$(ifconfig -a | sed "/inet\ /!d;s/.*inet\ \([^\ ]*\).*/\1/g")
+
+for e in moul root
+do
+    output=$(echo "$output" | sed "s/\($e\)/$GREEN\1$WHITE/g")
+done
+
+for e in ssh
+do
+    output=$(echo "$output" | sed "s/^#\[31;01m\($e\)/$GREEN\1$WHITE/g")
+done
+
+for e in tumsoul-s Dropbox firefox-b Safari GoogleTal
+do
+    output=$(echo "$output" | sed "s/^#\[31;01m\($e\)/$YELLOW\1$WHITE/g")
+done
+
+for e in $ips
+do
+    output=$(echo "$output" | sed "s/\($e\ [0-9]*\)/$BLUE\1$WHITE/g")
+done
+echo "$output" | tr "#" "\033"
+
+#ssh       19445 21671 moul    4u  IPv4 0xc1b6f188    0t0  TCP 10.224.5.50:49422->10.42.42.62:1080 (ESTABLISHED)
