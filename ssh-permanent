@@ -1,0 +1,4 @@
+#!/bin/sh
+
+while ! ssh -t $1 -o 'ServerAliveInterval 5' tmux a; do true; done
+
