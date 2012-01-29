@@ -1,0 +1,5 @@
+#!/bin/sh
+
+#echo $@ >> /tmp/aaa
+
+cat ~/.ssh/config | sed '/^[hH]ost\ [a-zA-Z0-9\._-]*$/!d;s/^.ost\ //g' | grep "^$1" | sort | uniq
