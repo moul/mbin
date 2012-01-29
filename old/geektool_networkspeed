@@ -1,0 +1,28 @@
+#!/bin/sh
+
+seconds=1
+
+en0_in_start=`netstat -ibn | grep -e "en0" -m 1 | awk '{print $7}'`
+en0_out_start=`netstat -ibn | grep -e "en0" -m 1 | awk '{print $10}'`
+en1_in_start=`netstat -ibn | grep -e "en1" -m 1 | awk '{print $7}'`
+en1_out_start=`netstat -ibn | grep -e "en1" -m 1 | awk '{print $10}'`
+
+sleep $seconds
+
+en0_in_stop=`netstat -ibn | grep -e "en0" -m 1 | awk '{print $7}'`
+en0_out_stop=`netstat -ibn | grep -e "en0" -m 1 | awk '{print $10}'`
+en1_in_stop=`netstat -ibn | grep -e "en1" -m 1 | awk '{print $7}'`
+en1_out_stop=`netstat -ibn | grep -e "en1" -m 1 | awk '{print $10}'`
+
+en0_in=`echo "scale=2; ($en0_in_stop - $en0_in_start) / 1024;" | bc`
+en0_out=`echo "scale=2; ($en0_out_stop - $en0_out_start) / 1024;" | bc`
+en1_in=`echo "scale=2; ($en1_in_stop - $en1_in_start) / 1024;" | bc`
+en1_out=`echo "scale=2; ($en1_out_stop - $en1_out_start) / 1024;" | bc`
+
+cat <<EOF
+ En0  In: $en0_in Kb/s
+     Out: $en0_out Kb/s
+ En1  In: $en1_in Kb/s
+     Out: $en1_out Kb/s
+
+EOF
