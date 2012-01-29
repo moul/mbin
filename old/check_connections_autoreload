@@ -1,0 +1,8 @@
+#!/bin/sh
+while [ 42 ]
+do
+    output=$(check_connections)
+    clear
+    echo "$output"
+    sleep 1
+done
