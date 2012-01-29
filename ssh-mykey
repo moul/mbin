@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+import os
+
+print 'umask 077; mkdir .ssh; echo "%s" >> .ssh/authorized_keys' % open(os.path.expanduser('~/.ssh/id_rsa.pub')).read().strip()
