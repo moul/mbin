@@ -1,0 +1,1 @@
+uptime | sed -e "s/:/ /2" | sed -e "s/,/ /2" | awk '{print "Up " $3 " " $4 " " $5 " hours and " $6 " minutes"}'
