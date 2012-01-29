@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+
+import urwid
+import urwid.raw_display
+import time
+
+class SwitchingPadding(urwid.Padding):
+	def padding_values(self, size, focus):
+		maxcol = size[0]
+		width, ignore = self.w.pack(focus=focus)
+		if maxcol > width:
+			self.align_type = "left"
+		else:
+			self.align_type = "right"
+		return urwid.Padding.padding_values(self, size, focus)
+
+
+class BigTextDisplay:
+	palette = [
+		('body',         'white',      'black', 'standout'),
+		('header',       'black',      'dark red',   'bold'),
+		('bigtext',      'dark red',      'black'),
+		('exit',         'black',      'dark red'),
+		]
+		
+	def setup_view(self):
+		fonts = urwid.get_all_fonts()
+		for name, fontcls in fonts:
+			font = fontcls()
+			if fontcls == urwid.Thin6x6Font:
+				self.font = font
+
+		self.bigtext = urwid.BigText("Hello :)", None)
+		self.bigtext.set_font(self.font)
+
+		bt = SwitchingPadding(self.bigtext, 'left', None)
+		bt = urwid.AttrWrap(bt, 'bigtext')
+		bt = urwid.Filler(bt, 'bottom', None, 20)
+		bt = urwid.BoxAdapter(bt, 7)
+		
+		# ListBox
+		l = [bt, urwid.Divider()]
+		w = urwid.ListBox(urwid.SimpleListWalker(l))
+		
+		# Exit message
+		exit = urwid.BigText(('exit'," Quit? "), self.font)
+		exit = urwid.Overlay(exit, w, 'center', None, 'middle', None)
+		return w, exit
+
+
+	def main(self):
+		self.ui = urwid.raw_display.Screen()
+		self.ui.register_palette(self.palette)
+		self.ui.set_input_timeouts(1)
+		self.view, self.exit_view = self.setup_view()
+		self.ui.run_wrapper(self.run)
+	
+	def run(self):
+		self.ui.set_mouse_tracking()
+		size = self.ui.get_cols_rows()
+		show_exit = False
+		do_exit = False
+		while True:
+			if show_exit:
+				canvas = self.exit_view.render(size)
+			else:
+				canvas = self.view.render(size, focus=True)
+				
+			self.ui.draw_screen(size, canvas)
+			if do_exit:
+				break
+				
+			keys = self.ui.get_input()
+				
+			if show_exit:
+				if 'y' in keys or 'Y' in keys:
+					do_exit = True
+				show_exit = False
+				continue
+
+			self.handle_input(size, keys)
+			if 'window resize' in keys:
+				size = self.ui.get_cols_rows()
+			if 'q' in keys:
+				show_exit = True
+			self.bigtext.set_text(str(time.time()))
+	
+	def handle_input(self, size, keys):
+		for k in keys:
+			if urwid.is_mouse_event(k):
+				event, button, col, row = k
+				self.view.mouse_event( size, event, 
+					button, col, row, focus=True )
+			elif k != 'window resize':
+				self.view.keypress( size, k )
+
+def main():
+	BigTextDisplay().main()
+	
+if '__main__'==__name__:
+	main()
