@@ -3,15 +3,37 @@
 import re
 import readline
 
+def color_binary(binary):
+    return binary.replace('0', '*TMP*').replace('1', '\033[1;32m1\033[0m').replace('*TMP*', '\033[0;33m0\033[0m')
+
+def group_binary(binary):
+    return re.sub("(.{4})", "\\1|", binary, re.DOTALL).strip('|')
+
 def pretty_hex2bin(input):
+    input = input.split()
+    number = input[0]
+    bitsets = input[1:]
     try:
-        hex = int(input, 16)
+        hex = int(number, 16)
     except:
         return "parse error"
     binary = "{0:020b}".format(hex).zfill(32)
-    pretty_binary = re.sub("(.{4})", "\\1|", binary, re.DOTALL).strip('|')
-    colored_pretty_binary = pretty_binary.replace('0', '*TMP*').replace('1', '\033[1;32m1\033[0m').replace('*TMP*', '\033[0;33m0\033[0m')
-    return "%14s     ->     %s" % (input, colored_pretty_binary)
+    pretty_binary = group_binary(binary)
+    colored_pretty_binary = color_binary(pretty_binary)
+    out = "%14s     ->     %s\n" % (number, colored_pretty_binary)
+    for bitset in bitsets:
+        if ':' in bitset:
+            bitset_numbers = map(int, bitset.split(':'))
+        else:
+            bitset_numbers = [int(bitset), int(bitset)]
+        print bitset_numbers
+        bitset_binary = binary[32 - max(bitset_numbers) - 1:32 - min(bitset_numbers)]
+        padded_bitset_binary = '.' * (32 - max(bitset_numbers) - 1) + bitset_binary + '.' * (min(bitset_numbers))
+        pretty_padded_bitset_binary = group_binary(padded_bitset_binary)
+        colored_bitset_binary = color_binary(pretty_padded_bitset_binary)
+        bitset_value = int(bitset_binary, 2)
+        out += '       %-7s      %-2s    %s\n' % ('[%s]' % bitset, bitset_value, colored_bitset_binary)
+    return out
 
 if __name__ == "__main__":
     from sys import argv
