@@ -11,6 +11,8 @@ def group_binary(binary):
     return re.sub("(.{4})", "\\1|", binary, re.DOTALL).strip('|')
 
 def pretty_hex2bin(input):
+    if not len(input.strip()):
+        return
     input = input.split()
     number = input[0]
     bitsets = input[1:]
@@ -35,6 +37,14 @@ def pretty_hex2bin(input):
         out += '       \033[1;34m%7s\033[0m    %-5s   %s\n' % ('[%s]' % bitset, bitset_value, colored_bitset_binary)
     return out
 
+def print_header():
+    print '                          0000 0000|0011 1111|1111 2222|2222 2233'
+    print '                          0123 4567|8901 2345|6789 0123|4567 8901'
+    print '                          ---------+---------+---------+---------'
+    print '                          3322 2222|2222 1111|1111 1100|0000 0000'
+    print '                          1098 7654|3210 9876|5432 1098|7654 3210'
+    print '                          ---------+---------+---------+---------'
+
 if __name__ == "__main__":
     histfile = './.pb_history'
     try:
@@ -45,16 +55,15 @@ if __name__ == "__main__":
     del readline, histfile
 
     from sys import argv
-    print '                          0000 0000|0011 1111|1111 2222|2222 2233'
-    print '                          0123 4567|8901 2345|6789 0123|4567 8901'
-    print '                          ---------+---------+---------+---------'
-    print '                          3322 2222|2222 1111|1111 1100|0000 0000'
-    print '                          1098 7654|3210 9876|5432 1098|7654 3210'
-    print '                          ---------+---------+---------+---------'
+    print_header()
     if len(argv) > 1:
         for input in argv[1:]:
-            print pretty_hex2bin(input)
+            out = pretty_hex2bin(input)
+            if out:
+                print out
     else:
         while True:
-            print pretty_hex2bin(raw_input('> '))
+            out = pretty_hex2bin(raw_input('> '))
+            if out:
+                print out
 
