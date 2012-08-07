@@ -2,13 +2,15 @@
 
 FBOXCOOKIE=/tmp/fbox_cookie
 WGETCMD="wget -q --load-cookies $FBOXCOOKIE"
-FBOXLOGINURL="http://mafreebox.freebox.fr/login.php?login=freebox&passwd=9rb54xc6"
+FBOXLOGINURL="http://mafreebox.freebox.fr/login.php?login=freebox&passwd=laurent"
 FBOXRRDURL="http://mafreebox.freebox.fr/rrd.cgi"
 DESTDIR="$HOME/Sites/fbx/"
 WIDTH=640
 HEIGHT=110
 
 $WGETCMD --save-cookies $FBOXCOOKIE -O /dev/null $FBOXLOGINURL
+
+set -x
 
 for PERIOD in hour day week; do
     for PORT in 0 1 2 3 4; do
