@@ -16,9 +16,11 @@ class NonCachingFileHandler < WEBrick::HTTPServlet::FileHandler
   end
 end
 
+port = ARGV[0] ? ARGV[0] : 8989
+
 server = WEBrick::HTTPServer.new(
                 :BindAddress => "0.0.0.0",
-                :Port => 8989)
+                :Port => port)
 
 server.mount '/', NonCachingFileHandler, Dir.pwd
 trap('INT') { server.stop }
