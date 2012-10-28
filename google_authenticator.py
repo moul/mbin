@@ -47,7 +47,13 @@ def main():
     config.read(os.path.expanduser('~/cu/.gauth'))
     for section in config.sections():
         secret = config.get(section, 'secret')
-        print section, get_totp_token(secret)
+        current = str(get_totp_token(secret)).zfill(6)
+        next = str(get_hotp_token(secret, intervals_no=int(time.time()+30)//30)).zfill(6)
+        print '%s, current=%s, next=%s' % (section, current, next)
+
+    remaining = int(30 - (time.time() % 30))
+    print
+    print '%s seconds remaining before next loop' % remaining
 
 if __name__ == "__main__":
     main()
