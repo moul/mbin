@@ -17,13 +17,13 @@ def pretty_hex2bin(input):
     number = input[0]
     bitsets = input[1:]
     try:
-        hex = int(number, 16)
+        _hex = int(number, 16)
     except:
         return "parse error"
-    binary = "{0:020b}".format(hex).zfill(32)
+    binary = "{0:020b}".format(_hex).zfill(32)
     pretty_binary = group_binary(binary)
     colored_pretty_binary = color_binary(pretty_binary)
-    out = "\033[1;31m%14s\033[0m    ->      %s\n" % (number, colored_pretty_binary)
+    out = "\033[1;31m%14s\033[0m         ->         %s\n" % (number, colored_pretty_binary)
     for bitset in bitsets:
         if ':' in bitset:
             bitset_numbers = map(int, bitset.split(':'))
@@ -34,7 +34,7 @@ def pretty_hex2bin(input):
         pretty_padded_bitset_binary = group_binary(padded_bitset_binary)
         colored_bitset_binary = color_binary(pretty_padded_bitset_binary)
         bitset_value = int(bitset_binary, 2)
-        out += '       \033[1;34m%7s\033[0m    %-5s   %s\n' % ('[%s]' % bitset, bitset_value, colored_bitset_binary)
+        out += '       \033[1;34m%7s\033[0m    %-5s   %-5s   %s\n' % ('[%s]' % bitset, bitset_value, hex(bitset_value), colored_bitset_binary)
     return out
 
 def print_header():
