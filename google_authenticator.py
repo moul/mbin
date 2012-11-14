@@ -29,7 +29,7 @@ The same can be achieved with http://www.nongnu.org/oath-toolkit/.
 #request on https://www.google.com. See
 #http://code.google.com/p/google-authenticator/source/browse/src/com/google/android/apps/authenticator/timesync/NetworkTimeProvider.java?repo=android
 
-import hmac, base64, struct, hashlib, time, ConfigParser, os.path
+import hmac, base64, struct, hashlib, time, ConfigParser, os.path, math
 
 def get_hotp_token(key, intervals_no):
     msg = struct.pack(">Q", intervals_no)
@@ -54,6 +54,8 @@ def main():
         if hexkey:
             key = hexkey.decode('hex')
         if secret:
+            secret = secret.replace(' ', '')
+            secret = secret.ljust(int(math.ceil(len(secret) / 16.0)*16), '=')
             key = base64.b32decode(secret, casefold = True)
         current = str(get_totp_token(key)).zfill(6)
         next = str(get_hotp_token(key, intervals_no=int(time.time()+30)//30)).zfill(6)
