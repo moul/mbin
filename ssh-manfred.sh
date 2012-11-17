@@ -1,3 +1,3 @@
 #!/bin/sh
 
-ssh $@ -t 'tmux a -t manfred || (tmux new-session -s manfred; attach)'
+ssh $1 -t "tmux attach $2 -t manfred || (tmux new-session -s manfred; attach)"
