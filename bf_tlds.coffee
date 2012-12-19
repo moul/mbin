@@ -9,11 +9,13 @@ tlds = server.tlds()
 
 basedomain = process.argv[2]
 
-checkDomain = (tld) ->
+checkDomain = (tld, retry = 2) ->
+    if retry == -1
+        return
     full = "#{basedomain}#{tld}"
     who.query full, (response) ->
         if response.error()
-            setTimeout (-> checkDomain full), 1000
+            setTimeout (-> checkDomain full, retry - 1), 1000
         else
             if response.available()
                 console.log "#{full}: #{if response.available() then 'AVAILABLE' else ''} | #{if response.error() then 'ERROR' else ''}"
