@@ -1,24 +1,27 @@
 #!/usr/bin/env coffee
 
-whois = require('whoisjs').whois
-who = new whois
+console.log = ->
 
+util = require 'util'
+whois = require('whoisjs').whois
 server = require('whoisjs/lib/whois/server').serverdef
 
+who = new whois
 tlds = server.tlds()
-
 basedomain = process.argv[2]
 
+
 checkDomain = (tld, retry = 2) ->
-    if retry == -1
-        return
     full = "#{basedomain}#{tld}"
+    if retry == -1
+        util.log "#{full} error"
+        return
     who.query full, (response) ->
         if response.error()
-            setTimeout (-> checkDomain full, retry - 1), 1000
+            setTimeout (-> checkDomain tld, retry - 1), 1000
         else
             if response.available()
-                console.log "#{full}: #{if response.available() then 'AVAILABLE' else ''} | #{if response.error() then 'ERROR' else ''}"
+                util.log "#{full} is AVAILABLE"
 
 for tld in tlds
     checkDomain tld
