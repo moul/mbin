@@ -12,6 +12,9 @@ echo "What is the full path to the icon (e.g. /Users/username/Desktop/icon.png)?
 read inputline
 icon=$inputline
 
+echo "Do you want to disable security ? (Yes/No)"
+read inputline
+disableSecurity=$inputline
 
 
 
@@ -35,10 +38,15 @@ if [ -f $icon ] ; then
     tiff2icns -noLarge $resourcePath/icon.tiff >& /dev/null
 fi
 
+optionalArgs=""
+if [ "$disableSecurity" = "Yes" ]; then
+    optionalArgs="--disable-web-security"
+fi
+
 # create the executable
 cat >$execPath/$name <<EOF
 #!/bin/sh
-exec $chromePath  --app="$url" --user-data-dir="$profilePath" "\$@"
+exec $chromePath  --app="$url" $optionalArgs --user-data-dir="$profilePath" "\$@"
 EOF
 chmod +x $execPath/$name
 
@@ -56,3 +64,4 @@ cat > $plistPath <<EOF
 </plist>
 EOF
 
+echo Done: $appRoot/$name.app
