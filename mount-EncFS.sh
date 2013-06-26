@@ -6,4 +6,10 @@ mount_enc() {
   echo "$password" | /usr/local/bin/encfs -S "$1" "$2"
 }
 
-# mount_enc /path/to/encrypted/directory /path/to/decrypted/directory
+mount_enc_with_passphrase() {
+  umount "$2"
+  echo "$3" | /usr/local/bin/encfs -S "$1" "$2"
+}
+
+# mount_enc                 /path/to/encrypted/directory /path/to/decrypted/directory
+# mount_enc_with_passphrase /path/to/encrypted/directory /path/to/decrypted/directory passphrase
