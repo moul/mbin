@@ -17,11 +17,23 @@ get_config() {
 
 cd $BASEDIR
 
+git_clone() {
+    project=$1
+    url=$2
+    parent_dir=$BASEDIR/$(dirname $1)
+    mkdir -p $parent_dir
+    cd $parent_dir
+    git clone $url
+}
+
 handle_gitlab() {
-    host=$(get_config $config host)
+    url=$(get_config $config url)
+    ssh_url=$(get_config $config ssh_url)
     token=$(get_config $config token)
-    projects=$(gitlab-repos-paths.coffee $host $token)
-    echo "$projects"
+    projects=$(gitlab-repos-paths.coffee $url $token)
+    for project in $projects; do
+        git_clone $project $ssh_url:$project
+    done
 }
 
 handle_github() {
