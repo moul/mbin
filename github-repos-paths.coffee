@@ -11,7 +11,7 @@ ret = []
 
 callback = (err, res) ->
   if err
-    console.err err
+    console.error err
     exit 1
 
   ret.push [repo.full_name for repo in res]
