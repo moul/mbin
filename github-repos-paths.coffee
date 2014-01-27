@@ -4,7 +4,7 @@ token = process.argv[2]
 
 Github = require 'github'
 
-github = new Github version: "3.0.0", debug: true
+github = new Github version: "3.0.0", debug: process.env.DEBUG?
 github.authenticate type: "oauth", token: token
 
 ret = []
@@ -14,11 +14,11 @@ callback = (err, res) ->
     console.error err
     exit 1
 
-  ret.push [repo.full_name for repo in res]
+  ret = ret.concat [repo.full_name for repo in res][0]
 
   if github.hasNextPage res
     github.getNextPage res, callback
   else
-    console.log ret
+    console.log ret.join ' '
 
 github.repos.getAll {}, callback
