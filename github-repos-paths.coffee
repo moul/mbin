@@ -12,7 +12,7 @@ ret = []
 callback = (err, res) ->
   if err
     console.error err
-    exit 1
+    process.exit 1
 
   ret = ret.concat [repo.full_name for repo in res][0]
 
