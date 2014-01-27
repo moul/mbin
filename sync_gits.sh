@@ -2,7 +2,6 @@
 
 #set -x
 
-ONLY_CONFIG=$1
 BASEDIR=$HOME/Git
 CONFIG=$HOME/.gitlabjs.yml
 
@@ -37,24 +36,9 @@ handle_gitlab() {
     done
 }
 
-github_repos_paths() {
-    token="$1"
-    page="$2"
-    projects=$(curl -s -H "Authorization: token $token" "https://api.github.com/user/repos?page=$page" | grep full_name | cut -d\" -f4)
-    count=$(echo $projects | sed 's/[^\ ]//g' | wc -c)
-    if [ "$count" == 30 ]; then
-        # FIXME: aggregate
-        echo $projects
-    else
-        echo $projects
-    fi
-}
-
 handle_github() {
-    echo $config github
     token=$(get_config $config token)
-    projects=$(github_repos_paths $token 1)
-    echo $projects
+    projects=$(github-repos-paths.coffee $token)
     for project in $projects; do
         git_clone $project git@github.com:$project
     done
@@ -69,14 +53,16 @@ handle_project() {
     esac
 }
 
-if [ -n $ONLY_CONFIG ]; then
-    type=$(get_config $ONLY_CONFIG type)
-    handle_project $type $ONLY_CONFIG
-else
+if [ -z $1 ]; then
     CONFIGS=$(get_configs)
     for config in $CONFIGS; do
         echo "[$config]"
         type=$(get_config $config type)
         handle_project $type $config
     done
+else
+    config=$1
+    echo "[$config]"
+    type=$(get_config $config type)
+    handle_project $type $config
 fi
