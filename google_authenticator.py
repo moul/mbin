@@ -43,7 +43,7 @@ def get_totp_token(key):
 
 def main():
     config = ConfigParser.RawConfigParser()
-    config.read(os.path.expanduser('~/cu/.gauth'))
+    config.read(os.path.expanduser('~/.gauth'))
     for section in config.sections():
         try:    secret = config.get(section, 'secret')
         except: secret = None
