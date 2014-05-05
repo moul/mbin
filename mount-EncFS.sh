@@ -14,10 +14,10 @@ mount_enc_with_passphrase() {
 # mount_enc                 /path/to/encrypted/directory /path/to/decrypted/directory
 # mount_enc_with_passphrase /path/to/encrypted/directory /path/to/decrypted/directory passphrase
 
-if [ "$#" -e 3 ]; then
+if [ "$#" == 3 ]; then
     mount_enc_with_passphrase $@
 fi
 
-if [ "$#" -e 2 ]; then
+if [ "$#" == 2 ]; then
     mount_enc $@
 fi
