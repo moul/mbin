@@ -5,5 +5,5 @@ while true; do
     if [ $? == 0 ]; then
         exit
     fi
-    sleep .05
+    sleep .1
 done
