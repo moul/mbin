@@ -1,7 +1,12 @@
 #!/bin/bash
 
 if [ $# -gt 0 ]; then
-    lsof -i -n -P | cut -d'>' -f2 | grep "$1" | cut -d: -f1 | sort | uniq -c | sort -n -r
+    LSOF=$(lsof -i -n -P | cut -d'>' -f2 | cut -d: -f1 | grep "$1")
 else
-    lsof -i -n -P | cut -d'>' -f2 | cut -d: -f1 | sort | uniq -c | sort -n -r
+    LSOF=$(lsof -i -n -P | cut -d'>' -f2 | cut -d: -f1)
 fi
+
+echo -n Total:
+echo "$LSOF" | wc -l
+echo
+echo "$LSOF" | sort | uniq -c | sort -n -r
