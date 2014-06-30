@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if [ $# -gt 0 ]; then
-    LSOF=$(lsof -i -n -P | cut -d'>' -f2 | cut -d: -f1 | grep "$1")
+    LSOF=$(lsof -i -n -P | grep '>' |  cut -d'>' -f2 | cut -d: -f1 | grep "$1")
 else
-    LSOF=$(lsof -i -n -P | cut -d'>' -f2 | cut -d: -f1)
+    LSOF=$(lsof -i -n -P | grep '>' | cut -d'>' -f2 | cut -d: -f1)
 fi
 
 echo -n Total:
