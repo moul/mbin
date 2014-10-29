@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ -z "$SLEEP" ]; then
+    SLEEP=.5
+fi
+
 command=$@
 while true; do
     a=$($command 2>&1)
@@ -9,5 +13,5 @@ while true; do
     echo $command
     echo
     echo "$a"
-    sleep .5
+    sleep $SLEEP
 done
