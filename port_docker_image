@@ -1,0 +1,71 @@
+#!/bin/bash
+
+set -xe
+
+usage() {
+    echo "Usage: $0 -i image-name [-r repo_name] [-b branch] [-d sub/directory] [-f FROM] [-a ARCH]"
+    exit 1
+}
+
+contains() {
+    [[ $1 =~ $2 ]] && exit 0 || exit 1
+}
+
+while getopts ":i:r:b:p:a:f:h" opt; do
+    case $opt in
+	i)
+	    IMAGE="$OPTARG"
+	    ;;
+	r)
+	    REPO="$OPTARG"
+	    ;;
+	p)
+	    PATH="$OPTARG"
+	    ;;
+	b)
+	    BRANCH="$OPTARG"
+	    ;;
+	a)
+	    ARCH="$OPTARG"
+	    ;;
+	f)
+	    FROM="$OPTARG"
+	    ;;
+	h)
+	    usage
+	    ;;
+	\?)
+	    echo "Invliad otion $OPTARG" >&2
+	    exit 1
+	    ;;
+	:)
+	    echo "Option s-$OPTARG requires an argument." >&2
+	    exit 1
+	    ;;
+    esac
+done
+
+if [[ -z "$IMAGE" ]]; then usage; fi
+BRANCH=${BRANCH:-master}
+SUBDIR=${SUBDIR:-/}
+ARCH=${ARCH:-$(uname -m)}
+REPO=${REPO:-$IMAGE}
+if ( contains "armv7l" "$ARCH" ); then ARCH="armhf"; fi
+BUILDDIR=$(mktemp -d /tmp/port_docker_image.XXXXXXXXXX)
+echo $BUILDDIR
+
+curl -sL https://github.com/$REPO/archive/$BRANCH.tar.gz | tar --strip-components=1 -C $BUILDDIR -xzvf -
+
+cd $BUILDDIR/$SUBDIR
+
+# Patch Dockerfile
+DOCKERFILE_FROM=$(cat Dockerfile | grep ^FROM | awk '{print $2}' | tr "/" "-" | sed 's|^|armbuild/|')
+FROM=${FROM:-$DOCKERFILE_FROM}
+sed -i "s|^FROM.*|FROM $FROM|" Dockerfile
+for old_arch in amd64 x86_64 i386 x86; do
+    sed -i "s|$old_arch|$ARCH|g" Dockerfile
+done
+
+cat Dockerfile
+
+docker build -t $IMAGE .
