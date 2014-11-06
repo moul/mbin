@@ -2,10 +2,8 @@
 
 set -e
 
-if [ "$DEBUG" = "1" ];then set -x; fi
-
 usage() {
-    echo "Usage: $0 -i image-name [-r repo_name] [-b branch] [-d sub/directory] [-f FROM] [-a ARCH]"
+    echo "Usage: [DEBUG=1] $0 -i image-name [-r repo_name] [-b branch] [-p sub/path] [-f FROM] [-a ARCH]"
     exit 1
 }
 
@@ -25,11 +23,11 @@ while getopts ":i:r:b:p:a:f:h" opt; do
 	r)
 	    REPO="$OPTARG"
 	    ;;
-	p)
-	    PATH="$OPTARG"
-	    ;;
 	b)
 	    BRANCH="$OPTARG"
+	    ;;
+	p)
+	    SUBPATH="$OPTARG"
 	    ;;
 	a)
 	    ARCH="$OPTARG"
@@ -52,15 +50,25 @@ while getopts ":i:r:b:p:a:f:h" opt; do
 done
 
 if [[ -z "$IMAGE" ]]; then usage; fi
+
+if [ "$DEBUG" = "1" ];then set -x; fi
+
 BRANCH=${BRANCH:-master}
-SUBDIR=${SUBDIR:-/}
+SUBPATH=${SUBPATH:-/}
 ARCH=${ARCH:-$(uname -m)}
 if ( contains "armv7l" "$ARCH" ); then ARCH="armhf"; fi
 BUILDDIR=$(mktemp -d /tmp/port_docker_image.XXXXXXXXXX)
 echo $BUILDDIR
+IMAGE_NAME=$(echo "$IMAGE" | cut -d: -f1)
+
+repos=""
+repos="$repos $REPO"
+repos="$repos $IMAGE_NAME"
+repos="$repos $(echo $IMAGE_NAME | sed 's|/|/docker-|')"
+repos="$repos $IMAGE_NAME-docker"
 
 DONE=0
-for repo in $REPO $IMAGE $(echo $IMAGE | sed 's|/|/docker-|'); do
+for repo in $repos; do
     curl -sL https://github.com/$repo/archive/$BRANCH.tar.gz \
 	| tar --strip-components=1 -C $BUILDDIR -xzf - \
 	&& DONE=1 && break || true
@@ -70,7 +78,7 @@ if [ "$DONE" = "0" ]; then
     exit 1
 fi
 
-cd $BUILDDIR/$SUBDIR
+cd $BUILDDIR/$SUBPATH
 
 # Patch Dockerfile
 DOCKERFILE_FROM=$(cat Dockerfile | grep -i ^FROM | awk '{print $2}' | convert_from)
