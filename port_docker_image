@@ -73,9 +73,9 @@ fi
 cd $BUILDDIR/$SUBDIR
 
 # Patch Dockerfile
-DOCKERFILE_FROM=$(cat Dockerfile | grep ^FROM | awk '{print $2}' | convert_from)
+DOCKERFILE_FROM=$(cat Dockerfile | grep -i ^FROM | awk '{print $2}' | convert_from)
 FROM=${FROM:-$DOCKERFILE_FROM}
-sed -i "s|^FROM.*|FROM $FROM|" Dockerfile
+sed -i "s|^[fF][rR][oO][mM].*|FROM $FROM|" Dockerfile
 for old_arch in amd64 x86_64 i386 x86; do
     sed -i "s|$old_arch|$ARCH|g" Dockerfile
 done
