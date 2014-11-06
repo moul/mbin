@@ -1,0 +1,9 @@
+#!/bin/bash
+
+USER=$1
+
+if [ "$TRUSTED" = "1" ]; then
+    docker search $USER | sed 1d | grep ^$USER | grep '[OK]' | awk '{print $1}'
+else
+    docker search $USER | sed 1d | grep ^$USER | awk '{print $1}'
+fi
