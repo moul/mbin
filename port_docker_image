@@ -3,7 +3,7 @@
 set -e
 
 usage() {
-    echo "Usage: [DEBUG=1] $0 -i image-name [-r repo_name] [-b branch] [-p sub/path] [-f FROM] [-a ARCH]"
+    echo "Usage: [DEBUG=1] $0 -i image-name [-r repo_name] [-b branch] [-p sub/path] [-f FROM] [-a ARCH] [-v] [-z]"
     exit 1
 }
 
@@ -15,37 +15,43 @@ convert_from() {
     tr "/" "-" | sed 's|^|armbuild/|'
 }
 
-while getopts ":i:r:b:p:a:f:h" opt; do
+while getopts ":i:r:b:p:a:f:hvz" opt; do
     case $opt in
-	i)
-	    IMAGE="$OPTARG"
-	    ;;
-	r)
-	    REPO="$OPTARG"
-	    ;;
-	b)
-	    BRANCH="$OPTARG"
-	    ;;
-	p)
-	    SUBPATH="$OPTARG"
-	    ;;
-	a)
-	    ARCH="$OPTARG"
-	    ;;
-	f)
-	    FROM="$OPTARG"
-	    ;;
-	h)
-	    usage
-	    ;;
-	\?)
-	    echo "Invliad otion $OPTARG" >&2
-	    exit 1
-	    ;;
-	:)
-	    echo "Option s-$OPTARG requires an argument." >&2
-	    exit 1
-	    ;;
+        z)
+            PUSH=1
+            ;;
+        i)
+            IMAGE="$OPTARG"
+            ;;
+        r)
+            REPO="$OPTARG"
+            ;;
+        b)
+            BRANCH="$OPTARG"
+            ;;
+        p)
+            SUBPATH="$OPTARG"
+            ;;
+        a)
+            ARCH="$OPTARG"
+            ;;
+        f)
+            FROM="$OPTARG"
+            ;;
+        v)
+            DEBUG=1
+            ;;
+        h)
+            usage
+            ;;
+        \?)
+            echo "Invliad otion $OPTARG" >&2
+            exit 1
+            ;;
+        :)
+            echo "Option s-$OPTARG requires an argument." >&2
+            exit 1
+            ;;
     esac
 done
 
@@ -70,8 +76,8 @@ repos="$repos $IMAGE_NAME-docker"
 DONE=0
 for repo in $repos; do
     curl -sL https://github.com/$repo/archive/$BRANCH.tar.gz \
-	| tar --strip-components=1 -C $BUILDDIR -xzf - \
-	&& DONE=1 && break || true
+        | tar --strip-components=1 -C $BUILDDIR -xzf - \
+        && DONE=1 && break || true
 done
 if [ "$DONE" = "0" ]; then
     echo "Cannot find Github repo." >&2
@@ -92,3 +98,7 @@ if [ "$DEBUG" = "1" ]; then cat Dockerfile; fi
 
 docker build -t $IMAGE .
 docker tag $IMAGE $(echo $IMAGE | convert_from)
+
+if [ "$PUSH" = "1" ]; then
+    docker push $(echo $IMAGE | convert_from)
+fi
