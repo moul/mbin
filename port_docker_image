@@ -1,6 +1,8 @@
 #!/bin/bash
 
-set -xe
+set -e
+
+if [ "$DEBUG" = "1" ];then set -x; fi
 
 usage() {
     echo "Usage: $0 -i image-name [-r repo_name] [-b branch] [-d sub/directory] [-f FROM] [-a ARCH]"
@@ -9,6 +11,10 @@ usage() {
 
 contains() {
     [[ $1 =~ $2 ]] && exit 0 || exit 1
+}
+
+convert_from() {
+    tr "/" "-" | sed 's|^|armbuild/|'
 }
 
 while getopts ":i:r:b:p:a:f:h" opt; do
@@ -49,23 +55,32 @@ if [[ -z "$IMAGE" ]]; then usage; fi
 BRANCH=${BRANCH:-master}
 SUBDIR=${SUBDIR:-/}
 ARCH=${ARCH:-$(uname -m)}
-REPO=${REPO:-$IMAGE}
 if ( contains "armv7l" "$ARCH" ); then ARCH="armhf"; fi
 BUILDDIR=$(mktemp -d /tmp/port_docker_image.XXXXXXXXXX)
 echo $BUILDDIR
 
-curl -sL https://github.com/$REPO/archive/$BRANCH.tar.gz | tar --strip-components=1 -C $BUILDDIR -xzvf -
+DONE=0
+for repo in $REPO $IMAGE $(echo $IMAGE | sed 's|/|/docker-|'); do
+    curl -sL https://github.com/$repo/archive/$BRANCH.tar.gz \
+	| tar --strip-components=1 -C $BUILDDIR -xzf - \
+	&& DONE=1 && break || true
+done
+if [ "$DONE" = "0" ]; then
+    echo "Cannot find Github repo." >&2
+    exit 1
+fi
 
 cd $BUILDDIR/$SUBDIR
 
 # Patch Dockerfile
-DOCKERFILE_FROM=$(cat Dockerfile | grep ^FROM | awk '{print $2}' | tr "/" "-" | sed 's|^|armbuild/|')
+DOCKERFILE_FROM=$(cat Dockerfile | grep ^FROM | awk '{print $2}' | convert_from)
 FROM=${FROM:-$DOCKERFILE_FROM}
 sed -i "s|^FROM.*|FROM $FROM|" Dockerfile
 for old_arch in amd64 x86_64 i386 x86; do
     sed -i "s|$old_arch|$ARCH|g" Dockerfile
 done
 
-cat Dockerfile
+if [ "$DEBUG" = "1" ]; then cat Dockerfile; fi
 
 docker build -t $IMAGE .
+docker tag $IMAGE $(echo $IMAGE | convert_from)
