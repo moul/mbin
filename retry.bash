@@ -1,9 +1,9 @@
 #!/bin/bash
 
 while true; do
-    eval $@
+    eval "$@"
     if [ $? == 0 ]; then
         exit
     fi
-    sleep .1
+    sleep .5
 done
