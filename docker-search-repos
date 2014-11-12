@@ -1,0 +1,9 @@
+#!/bin/bash
+
+pattern=$1
+
+if [ "$TRUSTED" = "1" ]; then
+    docker search "$pattern" | sed 1d | grep '[OK]' | awk '{print $1}'
+else
+    docker search "$pattern" | sed 1d | awk '{print $1}'
+fi
