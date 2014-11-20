@@ -1,3 +1,7 @@
 #!/bin/bash
 
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $@
+ssh \
+    -o ControlMaster=no \
+    -o UserKnownHostsFile=/dev/null \
+    -o StrictHostKeyChecking=no \
+    $@
