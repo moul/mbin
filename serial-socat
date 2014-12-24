@@ -1,0 +1,6 @@
+#!/bin/bash
+
+HOST=${1}
+PORT=${PORT:-23}
+
+socat stdio,raw,echo=0,escape=0x11 tcp-connect:${HOST}:${PORT}
