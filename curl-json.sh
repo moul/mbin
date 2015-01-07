@@ -5,4 +5,4 @@ if [ "$1" = "-i" ]; then
     curl -I -XGET $@
 fi
 
-curl -s $@ | python -m json.tool
+curl -H "Accept: application/json" -s $@ | python -m json.tool
