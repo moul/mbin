@@ -2,3 +2,7 @@
 
 docker ps -aq | xargs docker rm
 docker images | grep '^<none' | awk '{print $3}' | xargs docker rmi -f
+
+echo "Docker images with size >500MB"
+docker images | grep --color=none '[0-9] GB'
+docker images | grep --color=none '[5-9]..\.. MB'
