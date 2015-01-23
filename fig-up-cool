@@ -11,6 +11,11 @@ fi
 
 set -e
 
-fig stop ${NAME}
-fig up --no-deps -d ${NAME}
-fig logs ${NAME}
+for service in ${@}; do
+    fig stop ${service}
+done
+for service in ${@}; do
+    fig up --no-deps -d ${service}
+done
+
+fig logs ${@}
