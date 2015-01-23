@@ -1,6 +1,13 @@
 #!/bin/bash
 
-NAME=${1}
+if [ -z "${1}" ]; then
+    echo "Usage: $(basename ${0}) service"
+    echo
+    for service in $(cat fig.yml | grep '^[a-z]' | cut -d: -f1); do
+        echo "- $(basename ${0}) $service"
+    done
+    exit 1
+fi
 
 set -e
 
