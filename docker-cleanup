@@ -1,7 +1,10 @@
 #!/bin/sh
 
-header=$(boot2docker ssh df -h | grep Filesystem)
-before=$(boot2docker ssh df -h | grep /dev/sda1 | grep aufs 2>/dev/null)
+df_h() {
+    boot2docker ssh df -h 2>/dev/null || df -h
+}
+header=$(df_h | grep Filesystem)
+before=$(df_h | grep /var/lib/docker)
 
 echo "        $header"
 echo "Before: $before"
@@ -18,7 +21,7 @@ docker images | grep --color=none '[0-9] GB'
 docker images | grep --color=none '[5-9]..\.. MB'
 
 echo
-after=$(boot2docker ssh df -h | grep /dev/sda1 | grep aufs 2>/dev/null)
+after=$(df_h | grep /var/lib/docker)
 echo "        $header"
 echo "Before: $before"
 echo "After:  $after"
