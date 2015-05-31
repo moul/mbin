@@ -1,2 +1,5 @@
 #!/bin/sh
-curl $1 > $(basename $1)
+
+BASENAME=$(basename "$1")
+
+curl "$1" > "$BASENAME"

@@ -15,10 +15,10 @@ then
 fi
 
 # Setup UDP socket with statsd server
-exec 3<> /dev/udp/$host/$port
+exec 3<> "/dev/udp/$host/$port"
 
 # Send data
-printf "$1" >&3
+printf "%s" "$1" >&3
 
 # Close UDP socket
 exec 3<&-

@@ -2,19 +2,19 @@
 
 echo "What should the Application be called (no spaces allowed e.g. GCal)?"
 read inputline
-name=$inputline
+name="$inputline"
 
 echo "What is the url (e.g. https://www.google.com/calendar/render)?"
 read inputline
-url=$inputline
+url="$inputline"
 
 echo "What is the full path to the icon (e.g. /Users/username/Desktop/icon.png)?"
 read inputline
-icon=$inputline
+icon="$inputline"
 
 echo "Do you want to disable security ? (Yes/No)"
 read inputline
-disableSecurity=$inputline
+disableSecurity="$inputline"
 
 
 
@@ -25,17 +25,17 @@ appRoot="/Applications"
 
 # various paths used when creating the app
 resourcePath="$appRoot/$name.app/Contents/Resources"
-execPath="$appRoot/$name.app/Contents/MacOS" 
+execPath="$appRoot/$name.app/Contents/MacOS"
 profilePath="$appRoot/$name.app/Contents/Profile"
 plistPath="$appRoot/$name.app/Contents/Info.plist"
 
 # make the directories
-mkdir -p  $resourcePath $execPath $profilePath
+mkdir -p "$resourcePath" "$execPath" "$profilePath"
 
 # convert the icon and copy into Resources
-if [ -f $icon ] ; then
-    sips -s format tiff $icon --out $resourcePath/icon.tiff --resampleWidth 128 >& /dev/null
-    tiff2icns -noLarge $resourcePath/icon.tiff >& /dev/null
+if [ -f "$icon" ] ; then
+    sips -s format tiff "$icon" --out "$resourcePath/icon.tiff" --resampleWidth 128 >& /dev/null
+    tiff2icns -noLarge "$resourcePath/icon.tiff" >& /dev/null
 fi
 
 optionalArgs=""
@@ -44,14 +44,14 @@ if [ "$disableSecurity" = "Yes" ]; then
 fi
 
 # create the executable
-cat >$execPath/$name <<EOF
+cat >"$execPath/$name" <<EOF
 #!/bin/sh
 exec $chromePath  --app="$url" $optionalArgs --user-data-dir="$profilePath" "\$@"
 EOF
-chmod +x $execPath/$name
+chmod +x "$execPath/$name"
 
-# create the Info.plist 
-cat > $plistPath <<EOF
+# create the Info.plist
+cat > "$plistPath" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" “http://www.apple.com/DTDs/PropertyList-1.0.dtd”>
 <plist version=”1.0″>
@@ -64,4 +64,4 @@ cat > $plistPath <<EOF
 </plist>
 EOF
 
-echo Done: $appRoot/$name.app
+echo Done: "$appRoot/$name.app"
