@@ -1,0 +1,14 @@
+#!/bin/sh
+
+TOOL=${1}
+
+TOOLDIR=~/.moulbin
+if [ ! -f ${TOOLDIR}/${TOOL} ]; then
+    mkdir -p ${TOOLDIR}
+    wget -qO ${TOOLDIR}/${TOOL} https://raw.githubusercontent.com/moul/mbin/master/${TOOL}
+    chmod +x ${TOOLDIR}/${TOOL}
+fi
+
+shift
+
+exec ${TOOLDIR}/${TOOL} $@
