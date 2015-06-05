@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+TOOL=${1}
+
+TOOLDIR=~/.mxsbin
+if [ ! -f ${TOOLDIR}/${TOOL} ]; then
+    mkdir -p ${TOOLDIR}
+    wget -qO ${TOOLDIR}/${TOOL} https://raw.githubusercontent.com/aimxhaisse/mbin/master/tools/${TOOL}
+    chmod +x ${TOOLDIR}/${TOOL}
+fi
+
+shift
+
+exec ${TOOLDIR}/${TOOL} $@
