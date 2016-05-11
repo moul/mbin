@@ -11,7 +11,7 @@ fi
 for e in $(cat "$FILE"); do
     url="$site/$e"
     printf "%s\r\t\t\t\t\t\t\t" "$url"
-    a=$(curl -s -A firefox -X GET -I "$url")
+    a=$(curl -k -s -A firefox -X GET -I "$url")
     echo "$a" | head -n 1
     echo "$a" | grep -i location
 done
