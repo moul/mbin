@@ -1,3 +1,3 @@
 #!/bin/sh
 
-dscacheutil -flushcache
+sudo killall -HUP mDNSResponder
