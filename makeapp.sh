@@ -1,19 +1,19 @@
 #!/bin/sh
 
 echo "What should the Application be called (no spaces allowed e.g. GCal)?"
-read inputline
+read -r inputline
 name="$inputline"
 
 echo "What is the url (e.g. https://www.google.com/calendar/render)?"
-read inputline
+read -r inputline
 url="$inputline"
 
 echo "What is the full path to the icon (e.g. /Users/username/Desktop/icon.png)?"
-read inputline
+read -r inputline
 icon="$inputline"
 
 echo "Do you want to disable security ? (Yes/No)"
-read inputline
+read -r inputline
 disableSecurity="$inputline"
 
 

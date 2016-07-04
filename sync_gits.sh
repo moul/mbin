@@ -15,14 +15,14 @@ get_config() {
     grep -vE '^#' "$CONFIG" | grep "^\[${config}" -A 100 | grep "^${key}.*=.*" | head -n 1 | cut -d= -f2 | sed 's/\ //g'
 }
 
-cd "$BASEDIR"
+cd "$BASEDIR" || exit 1
 
 git_clone() {
     project="$1"
     url="$2"
     parent_dir=$BASEDIR/$(dirname "$1")
     mkdir -p "$parent_dir"
-    cd "$parent_dir"
+    cd "$parent_dir" || exit 1
     git clone "$url"
 }
 

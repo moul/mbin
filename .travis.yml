@@ -45,7 +45,7 @@ script:
   - ./shellcheck socat-proxy-GETPOST-nocache
   - ./shellcheck speedup-terminal.sh
   - ./shellcheck sqli_get_num_args.sh
-  - ./shellcheck stallone.sh
+  - ./shellcheck -e SC2001 stallone.sh
   - ./shellcheck statsd-client
   - ./shellcheck svn-to-git.sh
   - ./shellcheck sync_gits.sh
