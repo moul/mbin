@@ -6,7 +6,7 @@ fi
 
 command="$@"
 while true; do
-    a=$($command 2>&1)
+    a=$(/bin/sh -c "$command" 2>&1)
     clear
     date
     echo
