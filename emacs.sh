@@ -9,7 +9,7 @@ if [ "$ARGS" = "" ]; then
 fi
 
 if [ "$?" -eq "1" ]; then
-    emacsclient -a '' -nw "$ARGS"
+    emacsclient -a '' -nw $ARGS
 else
-    emacsclient -nw "$ARGS"
+    emacsclient -nw $ARGS
 fi
